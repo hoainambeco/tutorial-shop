@@ -5,7 +5,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @ObjectType('User')
 export class User {
   @PrimaryGeneratedColumn({
-    type: 'bigint',
     name: 'user_id',
   })
   @Field((type) => ID)

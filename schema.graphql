@@ -1,0 +1,109 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Comment {
+    content: String!
+    id: ID!
+    idPost: Float!
+    idUser: Float!
+}
+
+type Mutation {
+    createComment(comment: CommentDto!): Comment!
+    createPost(post: PostsDto!): Post!
+    createProduct(product: ProductInput!): Product!
+    createProductType(productType: ProductTypeInput!): ProductType!
+    createUser(user: UserDto!): User!
+    deleteComment(id: Float!): Boolean!
+    deletePost(id: Float!): Boolean!
+    deleteProduct(id: Float!): Boolean!
+    deleteProductType(id: Float!): Boolean!
+    deleteUser(id: Float!): Boolean!
+    updateComment(comment: CommentDto!, id: Float!): Comment!
+    updatePassword(id: Float!, newPassword: String!, oldPassword: String!): User!
+    updatePost(id: Float!, post: PostsDto!): Post!
+    updateProduct(id: Float!, product: ProductInput!): Product!
+    updateProductType(id: Float!, productType: ProductTypeInput!): ProductType!
+}
+
+type Post {
+    content: String!
+    id: ID!
+    idProduct: Float!
+    idProductType: Float!
+    idUser: Float!
+    title: String!
+}
+
+type Product {
+    count: Float!
+    description: String!
+    id: ID!
+    name: String!
+    price: Float!
+}
+
+type ProductType {
+    description: String!
+    id: ID!
+    name: String!
+}
+
+type Query {
+    commentsQueryAllByPostId(postId: Float!): [Comment!]!
+    post(id: Float!): Post!
+    postsQueryAll: [Post!]!
+    product(id: Float!): Product!
+    productTypes(id: Float!): ProductType!
+    productTypesQueryAll: [ProductType!]!
+    productsQueryAll: [Product!]!
+    user(id: Float!): User!
+}
+
+type User {
+    email: String!
+    password: String!
+    user_id: ID!
+    username: String!
+}
+
+input CommentDto {
+    content: String!
+    id: Float!
+    idPost: Float!
+    idUser: Float!
+}
+
+input PostsDto {
+    content: String!
+    id: Float!
+    idProduct: Float!
+    idProductType: Float!
+    idUser: Float!
+    title: String!
+}
+
+input ProductInput {
+    count: Float!
+    description: String!
+    id: String!
+    name: String!
+    price: Float!
+}
+
+input ProductTypeInput {
+    description: String!
+    id: String!
+    name: String!
+}
+
+input UserDto {
+    email: String!
+    password: String!
+    user_id: Float!
+    username: String!
+}

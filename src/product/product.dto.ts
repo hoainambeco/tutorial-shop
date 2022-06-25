@@ -4,7 +4,7 @@ import { IsNotEmpty } from 'class-validator';
 @InputType()
 export class ProductInput {
   @Field()
-  id: string;
+  id: number;
 
   @Field()
   @IsNotEmpty()

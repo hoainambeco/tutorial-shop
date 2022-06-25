@@ -14,6 +14,9 @@ import { ProductModule } from './product/product.module';
 import { CommentModule } from './comment/comment.module';
 import { UserController } from './user/user.controller';
 import { ProductController } from './product/product.controller';
+import { ImageModule } from './image/image.module';
+import { CartModule } from './cart/cart.module';
+import { OdersModule } from './oders/oders.module';
 @Module({
   imports: [
     AuthModule,
@@ -41,6 +44,9 @@ import { ProductController } from './product/product.controller';
     ProductTypeModule,
     ProductModule,
     CommentModule,
+    ImageModule,
+    CartModule,
+    OdersModule,
   ],
 })
 export class AppModule {}

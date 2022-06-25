@@ -12,7 +12,8 @@ export class PostsService {
 
   async findAll(): Promise<Post[]> {
     try {
-      return await this.postRepository.find();
+      const posts = await this.postRepository.find();
+      return posts;
     } catch (error) {
       console.log(error);
     }
@@ -26,14 +27,26 @@ export class PostsService {
   }
   async creatPost(postInput: Post): Promise<Post> {
     try {
-      const { title, content, idProduct, idProductType, idUser } = postInput;
+      const {
+        title,
+        content,
+        idProduct,
+        idProductType,
+        idUser,
+        createAt,
+        updateAt,
+      } = postInput;
       const post = this.postRepository.create({
         title,
         content,
         idProduct,
         idProductType,
         idUser,
+        createAt,
+        updateAt,
       });
+      post.createAt = new Date();
+      post.updateAt = new Date();
       return await this.postRepository.save(post);
     } catch (error) {
       console.log(error);
@@ -42,13 +55,17 @@ export class PostsService {
   async updatePost(id: number, postInput: Post): Promise<Post> {
     try {
       const { title, content, idProduct, idProductType, idUser } = postInput;
-      await this.postRepository.update(id, {
-        title,
-        content,
-        idProduct,
-        idProductType,
-        idUser,
-      });
+      const post = await this.postRepository.findOneBy({ id: id });
+      const updatePost = {
+        title: title || post.title,
+        content: content || post.content,
+        idProduct: idProduct || post.idProduct,
+        idProductType: idProductType || post.idProductType,
+        idUser: idUser || post.idUser,
+        createAt: post.createAt,
+        updateAt: new Date(),
+      };
+      await this.postRepository.update(id, updatePost);
       return await this.postRepository.findOneBy({ id: id });
     } catch (error) {
       console.log(error);

@@ -12,6 +12,10 @@ export class UserResolver {
 
     return this.userService.findById(id);
   }
+  @Query((returns) => [User])
+  users() {
+    return this.userService.findAll();
+  }
   @Mutation((returns) => User)
   createUser(@Args('user') user: UserDto) {
     return this.userService.creatUser(user);

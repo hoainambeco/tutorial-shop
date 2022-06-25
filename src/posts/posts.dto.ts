@@ -27,4 +27,12 @@ export class PostsDto {
   @Field()
   @IsNotEmpty()
   idUser: number;
+
+  @Field()
+  @IsNotEmpty()
+  createAt: Date;
+
+  @Field()
+  @IsNotEmpty()
+  updateAt: Date;
 }
