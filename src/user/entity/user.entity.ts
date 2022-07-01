@@ -31,4 +31,11 @@ export class User {
   })
   @Field()
   password: string;
+
+  @Column({
+    nullable: false,
+    default: 'User',
+  })
+  @Field()
+  role: string;
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CommentDto } from './comment.dto';
 import { Comment } from './comment.entity';
 
 @Injectable()
@@ -13,22 +12,22 @@ export class CommentService {
   async findAllByPostId(id: number): Promise<Comment[]> {
     return this.commentRepository.findBy({ idPost: id });
   }
-  async createComment(commentInput: CommentDto): Promise<Comment> {
-    const { content, idPost, idUser } = commentInput;
-    const comment = this.commentRepository.create({
-      content,
-      idPost,
-      idUser,
-    });
-    return await this.commentRepository.save(comment);
+
+  async findById(id: number): Promise<Comment> {
+    return await this.commentRepository.findOneBy({ id });
   }
-  async updateComment(id: number, commentInput: CommentDto): Promise<Comment> {
-    const { content, idPost, idUser } = commentInput;
-    await this.commentRepository.update(id, {
-      content,
-      idPost,
-      idUser,
-    });
+  async createComment(commentInput: Comment): Promise<Comment> {
+    return this.commentRepository.save(commentInput);
+  }
+  async updateComment(id: number, commentInput: Comment): Promise<Comment> {
+    const { content } = commentInput;
+    const comment = await this.commentRepository.findOneBy({ id });
+    const updateComment = {
+      content: content,
+      idPost: comment.idPost,
+      idUser: comment.idUser,
+    };
+    await this.commentRepository.update(id, updateComment);
     return await this.commentRepository.findOneBy({ id: id });
   }
   async deleteComment(id: number): Promise<boolean> {

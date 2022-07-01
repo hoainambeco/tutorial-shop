@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './posts.entity';
@@ -55,6 +55,7 @@ export class PostsService {
   async updatePost(id: number, postInput: Post): Promise<Post> {
     try {
       const { title, content, idProduct, idProductType, idUser } = postInput;
+
       const post = await this.postRepository.findOneBy({ id: id });
       const updatePost = {
         title: title || post.title,

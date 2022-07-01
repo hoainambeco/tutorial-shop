@@ -8,7 +8,10 @@ import {
   Param,
   Put,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ProductTypeService } from './product-type.service';
 
 @Controller('product-type')
@@ -20,8 +23,16 @@ export class ProductTypeController {
     return await this.productTypeService.findAll();
   }
   @Post()
-  async insert(@Body() productType: any) {
-    return await this.productTypeService.creatProductType(productType);
+  @UseGuards(AuthGuard('jwt'))
+  async insert(@Body() productType: any, @Request() req) {
+    console.log(req.user.user_id);
+    if (req.user.role === 'Admin') {
+      return await this.productTypeService.creatProductType(productType);
+    } else {
+      return {
+        message: 'You are not authorized to perform this action',
+      };
+    }
   }
 
   @Get('/:id')
@@ -29,14 +40,28 @@ export class ProductTypeController {
     return await this.productTypeService.findById(Param.id);
   }
   @Put('/:id')
-  async update(@Param() Param, @Body() productType: any) {
-    return await this.productTypeService.updateProductType(
-      Param.id,
-      productType,
-    );
+  @UseGuards(AuthGuard('jwt'))
+  async update(@Param() Param, @Body() productType: any, @Request() req) {
+    if (req.user.role === 'Admin') {
+      return await this.productTypeService.updateProductType(
+        Param.id,
+        productType,
+      );
+    } else {
+      return {
+        message: 'You are not authorized to perform this action',
+      };
+    }
   }
   @Delete('/:id')
-  async delete(@Param() Param) {
-    return await this.productTypeService.deleteProductType(Param.id);
+  @UseGuards(AuthGuard('jwt'))
+  async delete(@Param() Param, @Request() req) {
+    if (req.user.role === 'Admin') {
+      return await this.productTypeService.deleteProductType(Param.id);
+    } else {
+      return {
+        message: 'You are not authorized to perform this action',
+      };
+    }
   }
 }

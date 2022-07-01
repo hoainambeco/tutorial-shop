@@ -23,4 +23,7 @@ export class UserDto {
     message: 'password is too weak',
   })
   password: string;
+
+  @Field()
+  role: string;
 }

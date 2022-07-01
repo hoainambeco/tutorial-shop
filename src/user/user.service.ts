@@ -14,11 +14,12 @@ export class UserService {
     private readonly user: Repository<User>,
   ) {}
   async creatUser(userDto: UserDto): Promise<User> {
-    const { username, email, password } = userDto;
+    const { username, email, password, role } = userDto;
     const user = this.user.create({
       username,
       email,
       password: await bcrypt.hash(password, 10),
+      role,
     });
     return this.user.save(user);
   }
