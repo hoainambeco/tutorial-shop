@@ -18,7 +18,10 @@ export class PostsController {
 
   @Get()
   async findAll() {
-    return await this.postsService.findAll();
+    const data = await this.postsService.findAll();
+    console.log(data);
+
+    return data;
   }
 
   @Get('/:id')
@@ -29,7 +32,9 @@ export class PostsController {
   @Post()
   @UseGuards(AuthGuard('jwt'))
   async insert(@Body() post: any) {
-    return await this.postsService.creatPost(post);
+    const data = await this.postsService.creatPost(post);
+    console.log(data);
+    return data;
   }
 
   @Put('/:id')

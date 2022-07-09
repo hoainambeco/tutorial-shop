@@ -1,13 +1,15 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { ProductType } from 'src/product-type/entity/productType.entity';
-import { Product } from 'src/product/product.entity';
-import { User } from 'src/user/entity/user.entity';
+import { ProductType } from '../product-type/entity/productType.entity';
+import { Product } from '../product/product.entity';
+import { User } from '../user/entity/user.entity';
 import {
   Column,
   Entity,
+  EntityRepository,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  Repository,
 } from 'typeorm';
 
 @Entity()

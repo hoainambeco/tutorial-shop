@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Response } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entity/user.entity';
@@ -11,30 +11,30 @@ import { DataSnapshot, getDatabase, push, ref, set } from 'firebase/database';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly user: Repository<User>,
+    public userRepository: Repository<User>,
   ) {}
-  async creatUser(userDto: UserDto): Promise<User> {
+  async creatUser(userDto: UserDto) {
     const { username, email, password, role } = userDto;
-    const user = this.user.create({
+    const user = this.userRepository.create({
       username,
       email,
       password: await bcrypt.hash(password, 10),
       role,
     });
-    return this.user.save(user);
+    return user;
   }
 
   async findAll(): Promise<User[]> {
     try {
-      return await this.user.find();
+      return await this.userRepository.find();
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 
-  async findOne(username: string): Promise<User> | undefined {
+  async findOne(username: string): Promise<User> {
     try {
-      return await this.user.findOneBy({ username: username });
+      return await this.userRepository.findOneBy({ username: username });
     } catch (error) {
       return error;
     }
@@ -42,9 +42,9 @@ export class UserService {
 
   async findById(id: number): Promise<User> {
     try {
-      return await this.user.findOneBy({ user_id: id });
+      return await this.userRepository.findOneBy({ user_id: id });
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 
@@ -58,8 +58,10 @@ export class UserService {
       // push(reference, user); //tự tạo id
       //https://firebase.google.com/docs/database/web/read-and-write#update_specific_fields
       //thêm dữ liệu vào cơ sở dữ liệu
-      return await this.user.save(user);
+      await this.userRepository.save(user);
+      return user;
     } catch (error) {
+      console.log(error);
       if (error.code == 'ER_DUP_ENTRY') {
         message = {
           message: 'Tên đăng nhập đã tồn tại',
@@ -71,9 +73,11 @@ export class UserService {
     }
   }
 
-  async login(user: User): Promise<User> {
+  async login(user: User) {
     try {
-      const userLogin = await this.user.findOneBy({ username: user.username });
+      const userLogin = await this.userRepository.findOneBy({
+        username: user.username,
+      });
       if (userLogin) {
         const isMatch = await bcrypt.compare(user.password, userLogin.password);
         if (isMatch) {
@@ -92,31 +96,25 @@ export class UserService {
       }
     } catch (error) {
       console.log(error);
+      return error;
     }
   }
 
-  async update(oldUser: User, user: User, params: { id: any }): Promise<User> {
+  async update(updateUser: User, id: number) {
     try {
-      const updateUser = oldUser;
-      Object.keys(user).forEach((key) => {
-        updateUser[key] = user[key];
-      });
-      const password = await bcrypt.hash(user.password, 10);
-      updateUser.password = password;
-      await this.user.update(params.id, updateUser);
-      return await this.user.findOneBy({ user_id: params.id });
+      const { username, email, role } = updateUser;
+      await this.userRepository.save({ user_id: id, username, email, role });
+      return updateUser;
     } catch (error) {
-      console.log(error);
-      message = {
-        message: 'ID không tồn tại',
-      };
-      return message as User | any;
+      return error;
     }
   }
 
   async delete(id: number): Promise<User> {
     try {
-      await this.user.remove(await this.user.findOneBy({ user_id: id }));
+      await this.userRepository.remove(
+        await this.userRepository.findOneBy({ user_id: id }),
+      );
       message = {
         message: 'Xóa thành công',
       };
@@ -135,14 +133,14 @@ export class UserService {
     password: string,
   ): Promise<UserDto> {
     try {
-      const user = await this.user.findOneBy({ user_id: id });
+      let user = await this.userRepository.findOneBy({ user_id: id });
       if (user) {
         const isMatch = await bcrypt.compare(oldPassword, user.password);
         if (isMatch) {
           const newPassword = await bcrypt.hash(password, 10);
           user.password = newPassword;
-          await this.user.update(id, user);
-          return user;
+          await this.userRepository.update(id, { password: newPassword });
+          return await this.userRepository.findOneBy({ user_id: id });
         } else {
           message = {
             message: 'Mật khẩu không đúng',
@@ -157,15 +155,17 @@ export class UserService {
       }
     } catch (error) {
       console.log(error);
+      return error;
     }
   }
 
   async deleteUser(id: number): Promise<boolean> {
     try {
-      await this.user.delete(id);
+      await this.userRepository.delete(id);
       return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   }
 }

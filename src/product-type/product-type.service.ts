@@ -13,9 +13,11 @@ export class ProductTypeService {
 
   async findAll(): Promise<ProductType[]> {
     try {
+      console.log(this.productRepository);
+
       return await this.productRepository.find();
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 
