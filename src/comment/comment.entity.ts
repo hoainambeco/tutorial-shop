@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Post } from 'src/posts/posts.entity';
-import { User } from 'src/user/entity/user.entity';
+import { Post } from '../posts/posts.entity';
+import { User } from '../user/entity/user.entity';
 import {
   Column,
   Entity,

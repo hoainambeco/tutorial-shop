@@ -35,12 +35,17 @@ export class CartService {
     const reference = ref(db, 'carts/' + user + '/' + id);
     var promise = new Promise(function (resolve, reject) {
       onValue(reference, (snapshot: any) => {
-        resolve({
-          id: id,
-          nameProduct: snapshot.val().nameProduct,
-          price: snapshot.val().price,
-          count: snapshot.val().count,
-        });
+        if (snapshot.val() == null) {
+          return resolve([{}]);
+        } else {
+          resolve({
+            id: id,
+            nameProduct: snapshot.val().nameProduct,
+            price: snapshot.val().price,
+            count: snapshot.val().count,
+          });
+        }
+        reject([{}]);
       });
     });
     return promise;
@@ -52,15 +57,20 @@ export class CartService {
       let carts = [];
       var promise = new Promise(function (resolve, reject) {
         onValue(reference, (snapshot: any) => {
-          snapshot.forEach((element: any) => {
-            carts.push({
-              id: element.key,
-              nameProduct: element.val().nameProduct,
-              price: element.val().price,
-              count: element.val().count,
+          if (snapshot.val() == null) {
+            return resolve([{}]);
+          } else {
+            snapshot.forEach((element: any) => {
+              carts.push({
+                id: element.key,
+                nameProduct: element.val().nameProduct,
+                price: element.val().price,
+                count: element.val().count,
+              });
             });
-          });
+          }
           resolve(carts);
+          reject([{}]);
         });
       });
       return promise;

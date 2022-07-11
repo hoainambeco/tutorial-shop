@@ -33,8 +33,10 @@ export class OdersService {
           }
         });
         resolve(odersID);
+        reject({});
       });
     });
+    console.log('odersID ' + odersID);
     return promise;
   }
   async findById(id: string, user: string) {
@@ -45,20 +47,24 @@ export class OdersService {
       onValue(reference, (snapshot: any) => {
         console.log(snapshot.val());
         const data = snapshot.val();
-        const ids = Object.keys(snapshot.val());
-        console.log(ids);
-        for (let index = 0; index < ids.length; index++) {
-          odersID.push({
-            id: id,
-            product: {
-              id: ids[index],
-              nameProduct: data[ids[index]].nameProduct,
-              price: data[ids[index]].price,
-              count: data[ids[index]].count,
-            },
-          });
+        if (snapshot.val() == null) {
+          return resolve([{}]);
+        } else {
+          const ids = Object.keys(snapshot.val());
+          for (let index = 0; index < ids.length; index++) {
+            odersID.push({
+              id: id,
+              product: {
+                id: ids[index],
+                nameProduct: data[ids[index]].nameProduct,
+                price: data[ids[index]].price,
+                count: data[ids[index]].count,
+              },
+            });
+          }
         }
         resolve(odersID);
+        reject([{}]);
       });
     });
     return promise;
