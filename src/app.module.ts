@@ -11,6 +11,8 @@ import { CommentModule } from './comment/comment.module';
 import { ImageModule } from './image/image.module';
 import { CartModule } from './cart/cart.module';
 import { OdersModule } from './oders/oders.module';
+import { FacebookModule } from './facebook/facebook.module';
+import { GoogleModule } from './google/google.module';
 @Module({
   imports: [
     AuthModule,
@@ -41,6 +43,9 @@ import { OdersModule } from './oders/oders.module';
     ImageModule,
     CartModule,
     OdersModule,
+    GoogleModule,
+    FacebookModule,
   ],
+  providers: [],
 })
 export class AppModule {}
