@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as admin from 'firebase/app';
 import * as dotenv from 'dotenv';
+import { SwaggerModule } from '@nestjs/swagger';
+import { createdocument } from './swagger/swagger';
 
 dotenv.config();
 async function bootstrap() {
@@ -18,7 +20,9 @@ async function bootstrap() {
     measurementId: 'G-EN7PMF52Q5',
   };
   admin.initializeApp(firebaseConfig);
-
+  app.setGlobalPrefix('api');
+  app.enableCors();
+  SwaggerModule.setup('api', app, createdocument(app));
   await app.listen(3000);
 }
 export default admin;
