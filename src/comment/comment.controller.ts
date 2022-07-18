@@ -10,28 +10,34 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CommentDto } from './comment.dto';
 import { CommentService } from './comment.service';
 
 @Controller('comment')
+@ApiTags('comment')
+// @ApiBearerAuth()
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Get('/:idPost')
-  getComments(@Param('idPost') Param) {
+  getComments(@Param('idPost') Param): Promise<CommentDto[]> {
     return this.commentService.findAllByPostId(Param.idPost);
   }
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  createComment(@Body() commentInput: any) {
+  createComment(@Body() commentInput: CommentDto): Promise<CommentDto> {
     return this.commentService.createComment(commentInput);
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   async updateComment(
     @Param() Param,
-    @Body() commentInput: any,
+    @Body() commentInput: CommentDto,
     @Request() req,
   ) {
     const comment = await this.commentService.findById(Param.id);
@@ -43,6 +49,7 @@ export class CommentController {
   }
 
   @Delete('/:id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   async deleteComment(@Param() Param, @Request() req) {
     const comment = await this.commentService.findById(Param.id);

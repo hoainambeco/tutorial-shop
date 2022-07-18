@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { rejects } from 'assert';
 import {
   DataSnapshot,
   equalTo,
@@ -36,13 +37,11 @@ export class ImageService {
   }
 
   async findById(id: string, idPost: number) {
-    console.log(id);
-    console.log(idPost);
-
     const db = getDatabase();
     const reference = ref(db, 'images/' + idPost + '/' + id);
     var promise = new Promise(function (resolve, reject) {
       onValue(reference, (snapshot: any) => {
+        console.log(snapshot.val());
         resolve({
           id: id,
           url: snapshot.val().url,
@@ -52,12 +51,15 @@ export class ImageService {
     });
     return promise;
   }
+
   async findByPost(idPost: number) {
+    console.log(idPost);
     const db = getDatabase();
     const reference = ref(db, 'images/' + idPost);
     let images = [];
-    var promise = new Promise(function (resolve, reject) {
-      onValue(reference, (snapshot: any) => {
+    onValue(reference, (snapshot: any) => {
+      console.log(snapshot.val() + ' abc');
+      if (snapshot.val() != null) {
         snapshot.forEach((element: any) => {
           images.push({
             id: element.key,
@@ -65,10 +67,9 @@ export class ImageService {
             idPost: element.val().idPost,
           });
         });
-        resolve(images);
-      });
+      }
     });
-    return promise;
+    return images;
   }
   async createImage(imageInput: Image): Promise<Image> {
     try {

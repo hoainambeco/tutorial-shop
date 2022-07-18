@@ -6,34 +6,51 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ImageDto } from './image.dto';
 import { ImageService } from './image.service';
 
 @Controller('image')
+@ApiTags('Image')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
   @Get()
-  async findAll(): Promise<any> {
-    return await this.imageService.findAll();
+  async findAll(): Promise<ImageDto[]> {
+    return (await this.imageService.findAll()) as ImageDto[];
   }
 
   @Get('/:id/:idPost')
-  async findById(@Param() param) {
-    return await this.imageService.findById(param.id, param.idPost);
+  @ApiParam({ name: 'id', description: 'id of image' })
+  @ApiParam({ name: 'idPost', description: 'id of post' })
+  async findById(@Param() param): Promise<ImageDto> {
+    return (await this.imageService.findById(
+      param.id,
+      param.idPost,
+    )) as ImageDto;
   }
 
   @Get('postid/:id')
-  async findByPost(@Param() param) {
+  @ApiParam({ name: 'id' })
+  async findByPost(@Param() param): Promise<ImageDto[]> {
+    console.log(param.id);
     return await this.imageService.findByPost(param.id);
   }
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   async createImage(@Body() image: ImageDto): Promise<ImageDto> {
     return await this.imageService.createImage(image);
   }
 
   @Put('/:id/:idPost')
+  @ApiParam({ name: 'id' })
+  @ApiParam({ name: 'idPost' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   async updateImage(
     @Param() param,
     @Body() image: ImageDto,
@@ -42,6 +59,10 @@ export class ImageController {
   }
 
   @Delete('/:id/:idPost')
+  @ApiParam({ name: 'id' })
+  @ApiParam({ name: 'idPost' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   async deleteImage(@Param() param) {
     return await this.imageService.deleteImage(param.id, param.idPost);
   }

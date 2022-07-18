@@ -8,7 +8,8 @@ export function createdocument(app: INestApplication): OpenAPIObject {
     .setDescription(SWAGGER_CONFIG.description)
     .setVersion(SWAGGER_CONFIG.version)
     .addTag(SWAGGER_CONFIG.tags[0])
-    .addBearerAuth({ type: 'http', in: 'header', name: 'Authorization' });
+    // .addBearerAuth({ type: 'http', in: 'header', name: 'Authorization' });
+    .addBearerAuth();
   for (const tag of SWAGGER_CONFIG.tags) {
     builder.addTag(tag);
   }

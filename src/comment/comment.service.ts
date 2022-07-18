@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CommentDto } from './comment.dto';
 import { Comment } from './comment.entity';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class CommentService {
   async findById(id: number): Promise<Comment> {
     return await this.commentRepository.findOneBy({ id });
   }
-  async createComment(commentInput: Comment): Promise<Comment> {
+  async createComment(commentInput: CommentDto): Promise<Comment> {
     return this.commentRepository.save(commentInput);
   }
   async updateComment(id: number, commentInput: Comment): Promise<Comment> {

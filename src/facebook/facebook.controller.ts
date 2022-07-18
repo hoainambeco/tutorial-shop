@@ -1,9 +1,11 @@
 import { Controller, Get, HttpStatus, Req, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 import { FacebookService } from './facebook.service';
 
 @Controller('facebook')
+@ApiTags('Facebook')
 export class FacebookController {
   constructor(private readonly facebookService: FacebookService) {}
   @Get()

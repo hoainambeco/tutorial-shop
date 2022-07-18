@@ -10,9 +10,12 @@ import {
   Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ProductInput } from './product.dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
+@ApiTags('Product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Get()
@@ -20,8 +23,9 @@ export class ProductController {
     return await this.productService.findAll();
   }
   @Post()
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  async insert(@Body() product: any, @Request() req) {
+  async insert(@Body() product: ProductInput, @Request() req) {
     if (req.user.role === 'Admin') {
       return await this.productService.creatProduct(product);
     } else {
@@ -31,11 +35,15 @@ export class ProductController {
     }
   }
   @Get('/:id')
+  @ApiParam({ name: 'id' })
   async findById(@Param() Param) {
     return await this.productService.findById(Param.id);
   }
   @Put('/:id')
-  async update(@Param() Param, @Body() product: any, @Request() req) {
+  @ApiParam({ name: 'id' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  async update(@Param() Param, @Body() product: ProductInput, @Request() req) {
     if (req.user.role === 'Admin') {
       return await this.productService.updateProduct(Param.id, product);
     } else {
@@ -46,6 +54,9 @@ export class ProductController {
   }
 
   @Delete('/:id')
+  @ApiParam({ name: 'id' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   async delete(@Param() Param, @Request() req) {
     if (req.user.role === 'Admin') {
       return await this.productService.deleteProduct(Param.id);

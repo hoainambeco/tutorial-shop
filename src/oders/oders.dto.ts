@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { Cart } from 'src/cart/cart.entity';
 
@@ -6,16 +7,9 @@ import { Cart } from 'src/cart/cart.entity';
 export class OdersDto {
   @Field()
   @IsNotEmpty()
+  @ApiProperty({ type: String })
   id: string;
-  // @Field()
-  // @IsNotEmpty()
-  // productName: string;
-  // @Field()
-  // @IsNotEmpty()
-  // price: number;
-  // @Field()
-  // @IsNotEmpty()
-  // quantity: number;
   @Field((type) => Cart)
+  @ApiProperty({ type: Cart })
   product: Cart;
 }

@@ -15,11 +15,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiParam, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
+@ApiTags('User')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -31,6 +33,7 @@ export class UserController {
     return (await this.userService.findAll()) as UserDto[];
   }
   @Get(':id')
+  @ApiParam({ name: 'id' })
   async findById(@Param() Param, @Res() response: Response): Promise<UserDto> {
     response.status(200).send(await this.userService.findById(Param.id));
     return (await this.userService.findById(Param.id)) as UserDto;
@@ -54,7 +57,9 @@ export class UserController {
       | any;
   }
   @Put(':id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'id' })
   async update(
     @Body() updateUser: UserDto,
     @Param() params,
@@ -73,6 +78,9 @@ export class UserController {
     return { message: 'You are not authorized to perform this action' };
   }
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'id' })
   async delete(@Param() Param, @Request() req) {
     if (req.user.role === 'Admin') {
       return (await this.userService.delete(Param.id)) as UserDto;
