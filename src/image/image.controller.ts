@@ -17,12 +17,12 @@ import { ImageService } from './image.service';
 @ApiTags('Image')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
-  @Get()
+  @Get('all-images')
   async findAll(): Promise<ImageDto[]> {
     return (await this.imageService.findAll()) as ImageDto[];
   }
 
-  @Get('/:id/:idPost')
+  @Get('byidimage/:id/:idPost')
   @ApiParam({ name: 'id', description: 'id of image' })
   @ApiParam({ name: 'idPost', description: 'id of post' })
   async findById(@Param() param): Promise<ImageDto> {
@@ -36,7 +36,7 @@ export class ImageController {
   @ApiParam({ name: 'id' })
   async findByPost(@Param() param): Promise<ImageDto[]> {
     console.log(param.id);
-    return await this.imageService.findByPost(param.id);
+    return (await this.imageService.findByPost(param.id)) as ImageDto[];
   }
 
   @Post()

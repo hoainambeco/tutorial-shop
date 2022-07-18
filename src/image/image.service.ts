@@ -24,11 +24,15 @@ export class ImageService {
     var promise = new Promise(function (resolve, reject) {
       onValue(reference, (snapshot: any) => {
         snapshot.forEach((element: any) => {
-          images.push({
-            id: element.key,
-            url: element.val().url,
-            idPost: element.val().idPost,
-          });
+          const ids = Object.keys(element.val());
+          const data = element.val();
+          for (let index = 0; index < ids.length; index++) {
+            images.push({
+              id: element.key,
+              url: data[ids[index]].url,
+              idPost: data[ids[index]].idPost,
+            });
+          }
         });
         resolve(images);
       });
@@ -57,19 +61,23 @@ export class ImageService {
     const db = getDatabase();
     const reference = ref(db, 'images/' + idPost);
     let images = [];
-    onValue(reference, (snapshot: any) => {
-      console.log(snapshot.val() + ' abc');
-      if (snapshot.val() != null) {
-        snapshot.forEach((element: any) => {
-          images.push({
-            id: element.key,
-            url: element.val().url,
-            idPost: element.val().idPost,
+    var promise = new Promise(function (resolve, reject) {
+      onValue(reference, (snapshot: any) => {
+        console.log(snapshot.val() + ' abc');
+        if (snapshot.val() != null) {
+          snapshot.forEach((element: any) => {
+            images.push({
+              id: element.key,
+              url: element.val().url,
+              idPost: element.val().idPost,
+            });
           });
-        });
-      }
+        }
+
+        resolve(images);
+      });
     });
-    return images;
+    return promise;
   }
   async createImage(imageInput: Image): Promise<Image> {
     try {
