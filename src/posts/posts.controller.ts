@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Response,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
@@ -46,13 +47,20 @@ export class PostsController {
   @ApiParam({ name: 'id' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  async update(@Param() Param, @Body() post: PostsDto, @Request() req) {
+  async update(
+    @Param() Param,
+    @Body() post: PostsDto,
+    @Request() req,
+    @Response() res,
+  ) {
     console.log(req.user);
     const posta = await this.postsService.findById(Param.id);
     if (posta.idUser === req.user.user_id || req.user.role === 'Admin') {
       return await this.postsService.updatePost(Param.id, post);
+    } else {
+      res.status(401).send('You are not authorized to update this post');
+      return { message: 'You are not authorized to update this post' };
     }
-    return 'You are not authorized to update this post';
   }
 
   @Delete('/:id')
@@ -62,9 +70,15 @@ export class PostsController {
   async delete(@Param() Param, @Request() req) {
     console.log(req.user);
     const posta = await this.postsService.findById(Param.id);
-    if (posta.idUser === req.user.user_id || req.user.role === 'Admin') {
-      return await this.postsService.deletePost(Param.id);
+    console.log(posta);
+    try {
+      if (posta.idUser === req.user.user_id || req.user.role === 'Admin') {
+        return await this.postsService.deletePost(Param.id);
+      }
+      return 'You are not authorized to delete this post';
+    } catch (err) {
+      console.log(err);
+      return { error: 'Error' };
     }
-    return 'You are not authorized to update this post';
   }
 }

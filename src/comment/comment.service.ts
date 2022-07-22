@@ -11,6 +11,7 @@ export class CommentService {
     private readonly commentRepository: Repository<Comment>,
   ) {}
   async findAllByPostId(id: number): Promise<Comment[]> {
+    console.log(id);
     return this.commentRepository.findBy({ idPost: id });
   }
 
@@ -33,6 +34,10 @@ export class CommentService {
   }
   async deleteComment(id: number): Promise<boolean> {
     await this.commentRepository.delete(id);
+    return true;
+  }
+  async DeleteAllByPostId(id: number): Promise<boolean> {
+    await this.commentRepository.delete({ idPost: id });
     return true;
   }
 }

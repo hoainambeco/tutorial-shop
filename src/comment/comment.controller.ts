@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CommentDto } from './comment.dto';
 import { CommentService } from './comment.service';
 
@@ -21,7 +21,8 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Get('/:idPost')
-  getComments(@Param('idPost') Param): Promise<CommentDto[]> {
+  @ApiParam({ name: 'idPost' })
+  getComments(@Param() Param): Promise<CommentDto[]> {
     return this.commentService.findAllByPostId(Param.idPost);
   }
 
@@ -33,6 +34,7 @@ export class CommentController {
   }
 
   @Put(':id')
+  @ApiParam({ name: 'id' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   async updateComment(
@@ -41,7 +43,7 @@ export class CommentController {
     @Request() req,
   ) {
     const comment = await this.commentService.findById(Param.id);
-    if (req.user.user_id === comment.idUser) {
+    if (req.user.user_id === comment.idUser || req.user.role === 'Admin') {
       return this.commentService.updateComment(Param.id, commentInput);
     } else {
       return 'You are not allowed to update this comment';
@@ -49,6 +51,7 @@ export class CommentController {
   }
 
   @Delete('/:id')
+  @ApiParam({ name: 'id' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   async deleteComment(@Param() Param, @Request() req) {
@@ -58,5 +61,19 @@ export class CommentController {
     } else {
       return 'You are not allowed to update this comment';
     }
+  }
+
+  @Delete('deletebypost/:idPost')
+  @ApiParam({ name: 'idPost' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  async deleteAllByPostId(@Param() Param, @Request() req) {
+    if (
+      req.user.role === 'Admin' ||
+      req.body.status === 'delete post success'
+    ) {
+      return this.commentService.DeleteAllByPostId(Param.idPost);
+    }
+    return 'You are not allowed to delete this comment';
   }
 }

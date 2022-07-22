@@ -66,4 +66,11 @@ export class ImageController {
   async deleteImage(@Param() param) {
     return await this.imageService.deleteImage(param.id, param.idPost);
   }
+  @Delete('deletebypost/:idPost')
+  @ApiParam({ name: 'idPost' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  async deleteByPost(@Param() param) {
+    return await this.imageService.deleteByPost(param.idPost);
+  }
 }

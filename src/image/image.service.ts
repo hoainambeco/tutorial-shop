@@ -115,4 +115,14 @@ export class ImageService {
       console.log(error);
     }
   }
+  async deleteByPost(idPost: number): Promise<boolean> {
+    try {
+      const db = getDatabase();
+      const reference = ref(db, 'images/' + idPost);
+      remove(reference);
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

@@ -16,6 +16,6 @@ export class ImageDto {
 
   @Field()
   @IsNotEmpty()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: Number })
   idPost: number;
 }
